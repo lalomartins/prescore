@@ -1,8 +1,9 @@
 {
   "name": "prescore",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Precompile underscore templates into joined amd files",
   "main": "prescore.js",
+  "bin": {"prescore": "./prescore.js"},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lalomartins/prescore.git"
