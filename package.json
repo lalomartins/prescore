@@ -1,0 +1,26 @@
+{
+  "name": "prescore",
+  "version": "0.1.0",
+  "description": "Precompile underscore templates into joined amd files",
+  "main": "prescore.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lalomartins/prescore.git"
+  },
+  "keywords": [
+    "underscore",
+    "template",
+    "precompile"
+  ],
+  "author": "Lalo Martins <lalo.martins@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lalomartins/prescore/issues"
+  },
+  "homepage": "https://github.com/lalomartins/prescore#readme",
+  "dependencies": {
+    "find": "^0.2.3",
+    "optimist": "^0.6.0",
+    "underscore": "^1.8.0"
+  }
+}
