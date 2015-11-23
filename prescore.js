@@ -24,6 +24,10 @@ var optimist = require('optimist')
       description: 'Require module(s)',
       alias: 'r'
     },
+    separate: {
+      type: 'boolean',
+      description: 'Generates a bundle with separate module `define()`s'
+    },
 
     version: {
       type: 'boolean',
@@ -73,7 +77,7 @@ function compile(sourcePath, basePath) {
   var template = _.template(fs.readFileSync(sourcePath, {encoding: 'utf-8'}));
   templates.push({
     path: sourcePath,
-    source: template.source,
+    source: template.source.replace(/\n/g, '\n    '),
     name: name
   });
 }
@@ -103,17 +107,38 @@ if (argv.store) {
   }
 }
 
-for (var template of templates) {
-  fs.writeSync(out,
-    "define('" + template.name + "', [" + requires + "], function(" + requireArgs + ") {\n  var __template = " + template.source + ";\n");
-  if (argv.store) {
-    for (var step of storeSteps) {
-      fs.writeSync(out,
-      "  " + step + " = " + step + " || {};\n");
-    }
+if (argv.separate) {
+  for (var template of templates) {
     fs.writeSync(out,
-    "  " + argv.store + "['" + template.name + "'] = __template;\n");
+      "define('" + template.name + "', [" + requires + "], function(" + requireArgs + ") {\n  var __template = " + template.source + ";\n");
+    if (argv.store) {
+      for (var step of storeSteps) {
+        fs.writeSync(out,
+        "  " + step + " = " + step + " || {};\n");
+      }
+      fs.writeSync(out,
+      "  " + argv.store + "['" + template.name + "'] = __template;\n");
+    }
+    fs.writeSync(out, "  return __template;\n});\n\n")
   }
-  fs.writeSync(out, "  return __template;\n});\n\n")
+
+} else {
+  fs.writeSync(out, "define([" + requires + "], function(" + requireArgs + ") {\n  var __templateMap = {};\n");
+    if (argv.store) {
+      for (var step of storeSteps) {
+        fs.writeSync(out,
+        "  " + step + " = " + step + " || {};\n");
+      }
+    }
+  for (var template of templates) {
+    fs.writeSync(out,
+      "  __templateMap['" + template.name + "'] = " + template.source + ";\n");
+    if (argv.store) {
+      fs.writeSync(out,
+      "  " + argv.store + "['" + template.name + "'] = __templateMap['" + template.name + "'];\n");
+    }
+  }
+  fs.writeSync(out, "  return __templateMap;\n});\n\n")
 }
+
 fs.closeSync(out);
